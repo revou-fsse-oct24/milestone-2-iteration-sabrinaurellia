@@ -1,41 +1,44 @@
-import React from 'react'
-import "./App.css"
+import React, { useState } from "react";
+import { Routes, Route } from "react-router-dom";
+import Navbar from "./components/Navbar";
+import Sidebar from "./components/Sidebar";
+import Home from "./pages/Home";
+import ProductList from "./pages/ProductList";
+import ProductDetail from "./pages/ProductDetail";
+import Cart from "./pages/Cart";
+import Register from "./pages/Register";
+import { ThemeProvider } from "./context/ThemeContext";
+import { CartProvider } from "./context/CartContext";
+import "./App.css";
 
-type Product = {
-  id: number
-  name: string
-  price: number
-}
+const App = () => {
+  const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
 
-const products: Product[] = [
-  {
-    id: 1,
-    name: "iPhone",
-    price: 400,
-  },
-  {
-    id: 2,
-    name: "Samsung",
-    price: 500,
-  },
-]
-
-function App() {
   return (
-    <div className="App">
-      <ul>
-        {products.map((product) => (
-          <li key={product.id}>
-            <p>
-              <b>{product.name}</b>
-              <br />
-              <span>{product.price}</span>
-            </p>
-          </li>
-        ))}
-      </ul>
-    </div>
-  )
-}
+    <ThemeProvider>
+      <CartProvider>
+        <Navbar />
+        <div className="container">
+          {/* Pass onSelectCategory to Sidebar */}
+          <Sidebar 
+  selectedCategory={selectedCategory} 
+  onSelectCategory={setSelectedCategory} 
+/>
 
-export default App
+          <div className="content">
+            <Routes>
+              <Route path="/" element={<Home />} />
+              {/* Pass selectedCategory to ProductList */}
+              <Route path="/products" element={<ProductList selectedCategory={selectedCategory} />} />
+              <Route path="/products/:id" element={<ProductDetail />} />
+              <Route path="/cart" element={<Cart />} />
+              <Route path="/register" element={<Register />} />
+            </Routes>
+          </div>
+        </div>
+      </CartProvider>
+    </ThemeProvider>
+  );
+};
+
+export default App;
